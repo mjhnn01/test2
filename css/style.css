@@ -363,86 +363,83 @@ body.is-subpage::after {
   display: none !important;
 }
 
-/* 부가 컨트롤: 블랙 / 화이트 테마 전환 토글 스위치 */
+/* 부가 컨트롤: 에디토리얼 텍스트 테마 토글 (BLACK / WHITE) */
 .nav-extra-actions {
-  margin-top: 14px;
+  margin-top: 44px; /* 기존 14px에서 30px 아래로 조정 */
   display: flex;
   justify-content: flex-end;
 }
 
-.theme-toggle-wrapper {
+.theme-editorial-toggle {
   display: inline-flex;
   align-items: center;
-}
-
-.theme-toggle-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 3px 0;
-  cursor: pointer;
-  background: none;
-  border: none;
-  outline: none;
+  gap: 5px;
   user-select: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.theme-toggle-switch:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-/* 스위치 트랙 */
-.theme-toggle-track {
-  width: 32px;
-  height: 18px;
-  background-color: #E2E2E2;
-  border: 1px solid rgba(0, 0, 0, 0.18);
-  border-radius: 20px;
-  position: relative;
-  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-/* 스위치 썸 (원형 노브) */
-.theme-toggle-thumb {
-  width: 12px;
-  height: 12px;
-  background-color: #121212;
-  border-radius: 50%;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-/* 스위치 텍스트 라벨 (WHITE / BLACK) */
-.theme-toggle-label {
-  font-family: var(--font-main);
-  font-weight: 600;
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
-  color: var(--color-gray);
-  transition: color 0.3s ease;
   line-height: 1;
 }
 
-/* 블랙 모드 활성화 시 스위치 형태 */
-body.theme-dark .theme-toggle-track {
-  background-color: #2E2E2E;
-  border-color: rgba(255, 255, 255, 0.3);
+.theme-text-btn {
+  background: none;
+  border: none;
+  padding: 3px 1px;
+  margin: 0;
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: clamp(0.7rem, 0.8vw, 0.78rem);
+  font-weight: var(--weight-medium, 500);
+  letter-spacing: 0.08em;
+  color: var(--color-gray);
+  opacity: 0.42;
+  line-height: 1;
+  transition: opacity 0.22s ease, color 0.22s ease, font-weight 0.22s ease, transform 0.2s ease;
+  position: relative;
+  outline: none;
 }
 
-body.theme-dark .theme-toggle-thumb {
-  transform: translateX(14px);
-  background-color: #FFFFFF;
+.theme-text-btn:hover {
+  opacity: 0.85;
+  color: var(--color-dark);
 }
 
-body.theme-dark .theme-toggle-label {
+.theme-text-btn.active {
+  opacity: 1;
+  color: var(--color-dark);
+  font-weight: var(--weight-bold, 700);
+  cursor: default;
+  pointer-events: auto;
+}
+
+.theme-text-divider {
+  font-family: var(--font-main);
+  font-size: clamp(0.65rem, 0.75vw, 0.72rem);
+  font-weight: var(--weight-light, 300);
+  color: var(--color-gray);
+  opacity: 0.32;
+  user-select: none;
+  pointer-events: none;
+  line-height: 1;
+}
+
+/* 블랙 모드 활성화 시 에디토리얼 텍스트 토글 색상 반전 */
+body.theme-dark .theme-text-btn {
+  color: #A6A6A6;
+  opacity: 0.42;
+}
+
+body.theme-dark .theme-text-btn:hover {
   color: #FFFFFF;
+  opacity: 0.85;
+}
+
+body.theme-dark .theme-text-btn.active {
+  color: #FFFFFF;
+  opacity: 1;
+  font-weight: var(--weight-bold, 700);
+}
+
+body.theme-dark .theme-text-divider {
+  color: #666666;
+  opacity: 0.4;
 }
 
 /* 모바일 전용 탑바 (기본 화면에서는 숨김) */
@@ -619,62 +616,122 @@ body.theme-dark .theme-toggle-label {
   padding: 0;
 }
 
-.hero-graphic-img {
+/* 배경 그래픽 & 인터랙티브 오버레이를 함께 감싸 동일한 transform/좌표계를 보장하는 스테이지 */
+.hero-graphic-stage {
+  position: relative;
   width: 100vw;
   max-width: 100vw;
-  height: auto;
-  object-fit: contain;
   display: block;
-  user-select: none;
-  pointer-events: none;
+  line-height: 0;
   transform: translate(-500px, 300px) scale(1.3);
   transform-origin: center center;
   transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
 }
 
-
-/* 캡처 이미지 우측 3시~4시 방향 스위치 컨트롤 */
-.hero-bottom-control-block {
-  position: absolute;
-  top: 54%;
-  right: clamp(16px, 2.2vw, 36px);
-  transform: translateY(-50%);
-  z-index: 30;
-  display: flex;
-  align-items: center;
+.hero-graphic-img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  pointer-events: none;
 }
 
-.hero-custom-switch {
-  width: 44px;
-  height: 24px;
-  /* border removed */
-  border: none;
-  border-radius: 12px;
-  position: relative;
+/* 16개 디자이너 붉은 불씨 오버레이 SVG */
+.hero-spots-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 15;
+  overflow: visible;
+}
+
+/* 개별 16개 붉은 패스 파트 인터랙티브 버튼 */
+.hero-designer-spot {
+  pointer-events: auto;
   cursor: pointer;
-  background-color: var(--color-white);
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  outline: none;
 }
 
-.hero-custom-switch .switch-knob {
-  position: absolute;
-  top: 2px;
-  right: 3px;
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  background-color: var(--color-dark);
-  transition: all 0.25s ease;
+/* 주변까지 넓게 감지되는 투명 히트 영역 (눈에 보이지 않고 클릭/호버 감지만 확장) */
+.hero-designer-spot .spot-hit-area {
+  fill: transparent;
+  stroke: transparent;
+  pointer-events: all;
+  cursor: pointer;
 }
 
-.hero-custom-switch:not(.on) .switch-knob {
-  right: 21px;
-  background-color: var(--color-gray);
+.hero-designer-spot .spot-paths-wrap {
+  pointer-events: all;
 }
 
-.hero-custom-switch.on:hover .switch-knob {
-  background-color: var(--color-red);
+.hero-designer-spot path {
+  cursor: pointer;
 }
+
+/* 디자이너 이름 플로팅 호버 텍스트 (번호, 배경 박스 없이 마우스 커서 옆 이름만 노출) */
+.hero-designer-hover-name {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(18px, 14px);
+  transition: opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.15s;
+  will-change: transform, opacity, left, top;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.hero-designer-hover-name.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.hover-name-ko {
+  font-family: var(--font-main);
+  font-size: clamp(1.1rem, 1.35vw, 1.45rem);
+  font-weight: 800;
+  color: #121212;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.hover-name-en {
+  font-family: var(--font-main);
+  font-size: clamp(0.85rem, 1vw, 1.05rem);
+  font-weight: 500;
+  color: #5D5D5D;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-shadow: 0 0 10px #ffffff, 0 0 18px #ffffff;
+}
+
+/* 블랙 다크 테마 */
+body.theme-dark .hover-name-ko {
+  color: #ffffff;
+  text-shadow: 0 0 10px #000000, 0 0 20px #000000, 0 1px 6px rgba(0, 0, 0, 0.9);
+}
+
+body.theme-dark .hover-name-en {
+  color: #b5b5b5;
+  text-shadow: 0 0 10px #000000, 0 0 18px #000000;
+}
+
+
+
 
 /* --------------------------------------------------------------------------
    전시 소개문 섹션 (Intro & Statement - 좌우 100% 꽉 찬 와이드 레이아웃)
@@ -2062,15 +2119,104 @@ body.theme-dark .theme-toggle-label {
   max-height: 0;
   overflow: hidden;
   opacity: 0;
-  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, margin 0.3s ease;
+  transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, margin 0.35s ease;
   margin-top: 0;
   padding-left: clamp(60px, 5.5vw, 92px);
 }
 
+/* 회색 박스가 시원하게 노출되도록 충분한 max-height 확보 */
 .profile-project-item.is-open .project-item-body {
-  max-height: 240px;
+  max-height: 1000px;
   opacity: 1;
-  margin-top: 16px;
+  margin-top: 20px;
+}
+
+/* 펼쳐진 프로젝트 회색 박스 링크 래퍼 (클릭 시 작품 상세페이지로 이동, 대형 와이드 스케일) */
+.project-media-link-wrapper {
+  display: block;
+  width: 100%;
+  max-width: clamp(540px, 75vw, 1160px);
+  cursor: pointer;
+  outline: none;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+  user-select: none;
+}
+
+.project-media-link-wrapper:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+}
+
+body.theme-dark .project-media-link-wrapper:hover {
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+}
+
+/* 16:9 와이드 단색 회색 박스 */
+.project-gray-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #d4d4d4;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+.project-media-link-wrapper:hover .project-gray-frame {
+  background-color: #c7c7c7;
+}
+
+body.theme-dark .project-gray-frame {
+  background-color: #262626;
+}
+
+body.theme-dark .project-media-link-wrapper:hover .project-gray-frame {
+  background-color: #2f2f2f;
+}
+
+/* 호버 시 중앙 오버레이 뱃지: VIEW PROJECT → */
+.project-media-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(18, 18, 18, 0.12);
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+body.theme-dark .project-media-overlay {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.project-media-link-wrapper:hover .project-media-overlay {
+  opacity: 1;
+}
+
+.media-overlay-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-white);
+  font-size: clamp(0.85rem, 1vw, 1rem);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.08em;
+  padding: 10px 22px;
+  background: rgba(18, 18, 18, 0.85);
+  border-radius: 24px;
+  backdrop-filter: blur(8px);
+  transform: translateY(8px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.project-media-link-wrapper:hover .media-overlay-badge {
+  transform: translateY(0);
 }
 
 .project-body-inner {
@@ -2412,6 +2558,90 @@ body.theme-dark .theme-toggle-label {
   width: 100%;
   max-width: 100%;
   margin: 0;
+  position: relative;
+}
+
+/* ==========================================================================
+   프로젝트 페이지 전용: 우측 여백 세로 중앙 고정 필터 (ALL / 컨버전스 디자인 / 어드밴스드 디자인)
+   - 프로젝트 페이지 진입 시에만 노출
+   - 화면 우측 세로 바 여백의 정중앙에 콤팩트한 간격으로 플로팅 배치
+   - 연한 회색(Soft Light Gray) 미니멀 에디토리얼 스타일
+   ========================================================================== */
+.project-side-filter {
+  position: fixed;
+  top: calc(50% - 200px);
+  right: clamp(16px, 2.2vw, 36px);
+  transform: translateY(-50%);
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  text-align: right;
+  pointer-events: auto;
+  user-select: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 프로젝트 뷰가 활성화되지 않았을 때는 완전 은닉 */
+#view-project:not(.active-view) .project-side-filter {
+  display: none !important;
+}
+
+.side-filter-btn {
+  font-family: var(--font-main);
+  font-size: clamp(0.7rem, 0.8vw, 0.78rem);
+  font-weight: var(--weight-light);
+  letter-spacing: -0.015em;
+  color: #A3A3A3;
+  padding: 1.5px 0;
+  line-height: 1.35;
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline: none;
+  text-align: right;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  transition: color 0.2s ease, transform 0.2s ease, font-weight 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+/* 다크 모드에서의 연한 회색 */
+body.theme-dark .side-filter-btn {
+  color: #707070;
+}
+
+.side-filter-btn:hover {
+  color: #4A4A4A;
+  transform: translateX(-2px);
+}
+
+body.theme-dark .side-filter-btn:hover {
+  color: #C0C0C0;
+}
+
+/* 활성화 상태 (현재 선택된 수업 또는 전체) */
+.side-filter-btn.active {
+  color: var(--color-dark);
+  font-weight: var(--weight-bold);
+}
+
+body.theme-dark .side-filter-btn.active {
+  color: var(--color-white);
+}
+
+.side-filter-btn.active::before {
+  content: '';
+  display: inline-block;
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 50%;
+  background-color: var(--color-red);
+  box-shadow: 0 0 5px rgba(232, 2, 2, 0.5);
 }
 
 .project-card-grid {
@@ -2437,6 +2667,28 @@ body.theme-dark .theme-toggle-label {
   cursor: pointer;
   outline: none;
   box-shadow: none !important;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 필터링되어 숨겨진 카드 */
+.project-wireframe-card.is-filtered-out {
+  display: none !important;
+}
+
+/* 필터링 적용 시 카드 등장 애니메이션 */
+.project-wireframe-card.is-animating-in {
+  animation: projectCardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes projectCardFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .project-media-wrapper {
@@ -2720,6 +2972,159 @@ button,
   .custom-cursor {
     display: none !important;
   }
+}
+
+/* ==========================================================================
+   테마 전환 스무스 트랜지션 시스템 (Smooth Theme Transition)
+   - 그라디언트 효과 없이 순수한 배경/텍스트/테두리/필터의 0.4초 부드러운 전환
+   - 배경과 모든 요소의 전환 속도를 100% 완벽하게 일치시키는 동기화 엔진
+   ========================================================================== */
+
+/* 초기 로드 시 깜빡임 방지용 */
+body.theme-no-transition,
+body.theme-no-transition *,
+body.theme-no-transition *::before,
+body.theme-no-transition *::after {
+  transition: none !important;
+}
+
+/* 테마 전환 시 배경과 모든 요소(텍스트, 박스, 버튼, 로고 등)의 트랜지션 속도 100% 동일 동기화 */
+.is-theme-switching,
+.is-theme-switching *,
+.is-theme-switching *::before,
+.is-theme-switching *::after {
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              text-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              fill 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* 주요 레이아웃 및 컨테이너 배경/보더/그림자 부드러운 트랜지션 */
+html,
+body,
+.site-wrapper,
+main,
+.page-view,
+.landing-hero-fullscreen,
+.landing-mid-banner-section,
+.partner-logo-item,
+.intro-content-wrapper,
+.exhibition-hero-section,
+.main-video-box,
+.exhibition-info-text-section,
+.exhibition-photos-viewport-section,
+.photo-slide-item .aspect-photo,
+.photo-overlay-counter,
+.photo-overlay-dots-wrap .photos-slider-dots,
+.exhibition-map-wrapper,
+.exhibition-goods-fullbleed-section,
+.exhibition-goods-grid .aspect-goods,
+.exhibition-gray-box,
+.project-view-container,
+.project-card,
+.project-gray-box,
+.project-gray-frame,
+.central-project-display,
+#view-project-detail,
+.project-detail-wrapper,
+.project-detail-layout,
+.project-detail-content-area,
+.project-hero-media-wrapper,
+.project-detail-gray-box,
+.btn-project-nav,
+#view-designer,
+.designer-card,
+.designer-gray-box,
+#view-designer-detail,
+.designer-detail-wrapper,
+.modal-dialog,
+.modal-overlay,
+.global-footer,
+.global-floating-nav,
+.side-filter-btn,
+.custom-cursor-circle {
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 모든 타이포그래피 및 UI 텍스트 부드러운 컬러/텍스트섀도우 트랜지션 */
+body,
+p, h1, h2, h3, h4, h5, h6,
+span, a, button, label, input,
+.title-bold-xl,
+.title-bold-lg,
+.title-bold-md,
+.title-bold-sm,
+.body-light-lg,
+.body-light-md,
+.body-light-sm,
+.subtitle-medium-lg,
+.subtitle-medium-md,
+.subtitle-medium-sm,
+.hero-description-lead,
+.hero-description-sub,
+.hero-meta-title,
+.hero-meta-desc,
+.intro-heading,
+.intro-paragraph,
+.intro-paragraph.strong-lead,
+.intro-paragraph-en,
+.central-project-title,
+.central-project-designer,
+.central-project-comma,
+.project-detail-title,
+.project-detail-designer,
+.project-detail-lead,
+.project-detail-lead-desc,
+.project-detail-sub,
+.project-detail-sub-desc,
+.designer-name-kr,
+.designer-name-en,
+.designer-detail-name-kr,
+.designer-detail-name-en,
+.designer-detail-statement,
+.designer-project-title,
+.designer-project-category,
+.nav-menu-item,
+.theme-text-btn,
+.theme-text-divider,
+.info-meta-label,
+.info-meta-divider,
+.info-meta-value,
+.side-filter-btn,
+.detail-back-btn,
+.detail-pager-btn,
+.btn-project-nav,
+.exhibition-info-sub-kr,
+.exhibition-info-sub-en,
+.exhibition-info-main-title,
+.mid-banner-lead,
+.hover-name-ko,
+.hover-name-en,
+.footer-text,
+.footer-copy,
+.footer-brand-title {
+  transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              text-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 로고 및 전시장 지도 SVG 부드러운 필터 반전 트랜지션 */
+.nav-brand-logo,
+.landing-hero-logo,
+.exhibition-map-svg {
+  transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease;
+}
+
+/* 테마 전환 그라디언트 비활성화 (순수한 배경/텍스트 전환만 적용) */
+.theme-ambient-gradient-layer {
+  display: none !important;
 }
 
 /* ==========================================================================

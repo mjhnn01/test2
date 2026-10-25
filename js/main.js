@@ -24,6 +24,25 @@ document.addEventListener('DOMContentLoaded', () => {
     "21":1,"22":1,"23":1,"24":1,"25":1,"26":1,"27":1,"28":1,"29":1
   });
 
+  // 수업별 프로젝트 ID 분류 (컨버전스 디자인 15작품: 01~15 / 어드밴스드 디자인 14작품: 16~29)
+  const convergenceProjectIdList = projectIdList.filter(id => {
+    const n = parseInt(id, 10);
+    return !isNaN(n) && n >= 1 && n <= 15;
+  });
+
+  const advancedProjectIdList = projectIdList.filter(id => {
+    const n = parseInt(id, 10);
+    return !isNaN(n) && n >= 16 && n <= 29;
+  });
+
+  let currentCourseFilter = 'all'; // 'all', 'convergence', 'advanced'
+
+  function getActiveProjectIdList() {
+    if (currentCourseFilter === 'convergence') return convergenceProjectIdList;
+    if (currentCourseFilter === 'advanced') return advancedProjectIdList;
+    return projectIdList;
+  }
+
   function updateFloatingNavOnScroll() {
     if (!floatingNav) return;
     
@@ -48,6 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.remove('is-subpage');
     } else {
       document.body.classList.add('is-subpage');
+    }
+
+    // 프로젝트 페이지 여부에 따른 클래스 토글
+    if (targetViewId === 'project' || targetViewId === 'project-detail') {
+      document.body.classList.add('is-project-active');
+    } else {
+      document.body.classList.remove('is-project-active');
     }
 
     // 뷰 전환
@@ -137,13 +163,19 @@ document.addEventListener('DOMContentLoaded', () => {
     switchView('project-detail', updateHash);
   }
 
-  // 이전/다음 프로젝트 이동
+  // 이전/다음 프로젝트 이동 (현재 선택된 수업 필터 범위 내에서 순환)
   function stepProject(direction) {
-    const curIdx = projectIdList.indexOf(currentProjectId);
+    const activeList = getActiveProjectIdList();
+    if (!activeList.length) return;
+    const curIdx = activeList.indexOf(currentProjectId);
     let targetIdx = curIdx + direction;
-    if (targetIdx < 0) targetIdx = projectIdList.length - 1;
-    if (targetIdx >= projectIdList.length) targetIdx = 0;
-    const targetId = projectIdList[targetIdx];
+    if (curIdx === -1) {
+      targetIdx = 0;
+    } else {
+      if (targetIdx < 0) targetIdx = activeList.length - 1;
+      if (targetIdx >= activeList.length) targetIdx = 0;
+    }
+    const targetId = activeList[targetIdx];
     openProjectDetail(targetId, true);
   }
 
@@ -154,15 +186,99 @@ document.addEventListener('DOMContentLoaded', () => {
     btnNextProject.addEventListener('click', () => stepProject(1));
   }
 
-  // ALL PROJECTS 목록으로 돌아가기 버튼
+  // ALL PROJECTS 목록으로 돌아가기 버튼 (이전 수업 필터 상태 유지)
   if (btnBackToProjects) {
     btnBackToProjects.addEventListener('click', () => {
       switchView('project', true);
     });
   }
 
-  // 프로젝트 카드 클릭 시 상세페이지 열기 바인딩
+  // ==========================================================================
+  // [A-1] 수업별 프로젝트 필터링 컨트롤러 (우측 여백 중앙 배치)
+  // - ALL (모든 29개 작품)
+  // - CONVERGENCE DESIGN (총 15개 작품: 01~15)
+  // - ADVANCED DESIGN (총 14개 작품: 16~29)
+  // - 프로젝트 페이지 첫 진입 시 ALL이 기본 선택되어 모든 작품 표시
+  // ==========================================================================
   const projectCards = document.querySelectorAll('#view-project .project-wireframe-card');
+  const filterBtnAll = document.getElementById('btn-filter-all');
+  const filterBtnConvergence = document.getElementById('btn-filter-convergence');
+  const filterBtnAdvanced = document.getElementById('btn-filter-advanced');
+  const sideFilterButtons = [filterBtnAll, filterBtnConvergence, filterBtnAdvanced].filter(Boolean);
+
+  function setCourseFilter(filterType) {
+    currentCourseFilter = filterType || 'all';
+
+    // 필터 버튼 활성화 클래스 및 접근성 속성 갱신
+    if (filterBtnAll) {
+      const isActive = currentCourseFilter === 'all';
+      filterBtnAll.classList.toggle('active', isActive);
+      filterBtnAll.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    }
+    if (filterBtnConvergence) {
+      const isActive = currentCourseFilter === 'convergence';
+      filterBtnConvergence.classList.toggle('active', isActive);
+      filterBtnConvergence.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    }
+    if (filterBtnAdvanced) {
+      const isActive = currentCourseFilter === 'advanced';
+      filterBtnAdvanced.classList.toggle('active', isActive);
+      filterBtnAdvanced.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    }
+
+    // 마우스 호버 화면 중앙 고정 디스플레이 닫기
+    const centralDisplay = document.getElementById('project-central-display');
+    if (centralDisplay) {
+      centralDisplay.classList.remove('is-active');
+    }
+
+    // 카드 표시/숨김 및 부드러운 애니메이션
+    projectCards.forEach(card => {
+      const cardCourse = card.getAttribute('data-course');
+      let shouldShow = false;
+
+      if (currentCourseFilter === 'all') {
+        shouldShow = true;
+      } else if (currentCourseFilter === cardCourse) {
+        shouldShow = true;
+      }
+
+      if (shouldShow) {
+        card.classList.remove('is-filtered-out');
+        card.classList.remove('is-animating-in');
+        // 애니메이션 강제 재실행을 위한 reflow
+        void card.offsetWidth;
+        card.classList.add('is-animating-in');
+      } else {
+        card.classList.add('is-filtered-out');
+        card.classList.remove('is-animating-in');
+      }
+    });
+  }
+
+  // 필터 버튼 클릭 이벤트 바인딩 (ALL / CONVERGENCE DESIGN / ADVANCED DESIGN)
+  if (filterBtnAll) {
+    filterBtnAll.addEventListener('click', (e) => {
+      e.preventDefault();
+      setCourseFilter('all');
+    });
+  }
+
+  if (filterBtnConvergence) {
+    filterBtnConvergence.addEventListener('click', (e) => {
+      e.preventDefault();
+      setCourseFilter('convergence');
+    });
+  }
+
+  if (filterBtnAdvanced) {
+    filterBtnAdvanced.addEventListener('click', (e) => {
+      e.preventDefault();
+      setCourseFilter('advanced');
+    });
+  }
+
+  // 프로젝트 카드 클릭 시 상세페이지 열기 바인딩
   projectCards.forEach(card => {
     card.addEventListener('click', (e) => {
       e.preventDefault();
@@ -232,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
       detailInstagram.href = `https://instagram.com/${cleanHandle}`;
     }
 
-    // 하단 프로젝트 목록 렌더링
+    // 하단 프로젝트 목록 렌더링 (아코디언 토글 시 설명 대신 이미지 노출 & 클릭 시 프로젝트 상세페이지 이동)
     if (detailProjectsList && Array.isArray(data.projects)) {
       detailProjectsList.innerHTML = '';
       data.projects.forEach((proj, idx) => {
@@ -240,35 +356,65 @@ document.addEventListener('DOMContentLoaded', () => {
         itemEl.className = 'profile-project-item';
         itemEl.setAttribute('data-proj-idx', idx);
 
+        const targetProjId = proj.projectId || (idx === 0 ? '01' : '16');
+        const projData = typeof PROJECTS_DATA !== 'undefined' ? PROJECTS_DATA[targetProjId] : null;
+        const projectTitle = proj.title || (projData ? projData.title : 'PROJECT');
+        const projectDesc = proj.desc || (projData ? projData.subtitle : '');
+        const projectImage = proj.image || (projData ? projData.image : 'assets/poster-final.png');
+
         itemEl.innerHTML = `
-          <div class="project-item-header" tabindex="0" role="button" aria-expanded="false" aria-label="${proj.num} ${proj.title} 상세 보기 토글">
+          <div class="project-item-header" tabindex="0" role="button" aria-expanded="false" aria-label="${proj.num} ${projectTitle} 회색 박스 보기 토글">
             <span class="project-item-num">${proj.num}</span>
-            <span class="project-item-title">${proj.title}</span>
-            <span class="project-item-desc">${proj.desc}</span>
+            <span class="project-item-title">${projectTitle}</span>
+            <span class="project-item-desc">${projectDesc}</span>
             <span class="project-item-plus" aria-hidden="true">+</span>
           </div>
           <div class="project-item-body">
-            <div class="project-body-inner">
-              <p>${proj.details || proj.desc}</p>
+            <div class="project-media-link-wrapper" role="button" tabindex="0" data-project-id="${targetProjId}" aria-label="${projectTitle} 작품 상세페이지 보기">
+              <div class="project-gray-frame">
+                <div class="project-media-overlay">
+                  <span class="media-overlay-badge font-brand-highlight">VIEW PROJECT →</span>
+                </div>
+              </div>
             </div>
           </div>
         `;
 
-        // 아코디언 토글 인터랙션
+        // 1. 작품 이름(헤더) 클릭 시 아코디언 토글 (이미지 열기/닫기)
         const headerEl = itemEl.querySelector('.project-item-header');
-        headerEl.addEventListener('click', () => {
+        const toggleAccordion = () => {
           const isOpen = itemEl.classList.toggle('is-open');
           headerEl.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        });
+        };
 
-        // 키보드 접근성 (Enter/Space 지원)
+        headerEl.addEventListener('click', toggleAccordion);
         headerEl.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            const isOpen = itemEl.classList.toggle('is-open');
-            headerEl.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            toggleAccordion();
           }
         });
+
+        // 2. 나타난 이미지 클릭 시 해당 작품 상세페이지로 바로 연결
+        const mediaLink = itemEl.querySelector('.project-media-link-wrapper');
+        if (mediaLink) {
+          const navigateToProject = (e) => {
+            e.stopPropagation(); // 헤더 아코디언 토글 중복 트리거 방지
+            const pid = mediaLink.getAttribute('data-project-id');
+            if (pid) {
+              const formattedId = pid.length === 1 ? '0' + pid : pid;
+              openProjectDetail(formattedId, true);
+            }
+          };
+
+          mediaLink.addEventListener('click', navigateToProject);
+          mediaLink.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              navigateToProject(e);
+            }
+          });
+        }
 
         detailProjectsList.appendChild(itemEl);
       });
@@ -330,6 +476,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const target = btn.getAttribute('data-nav');
       if (target) {
         e.preventDefault();
+        // 프로젝트 메뉴 클릭 시 처음 들어갔을 때는 모든 프로젝트가 다 보이도록 'all'로 초기화
+        if (target === 'project') {
+          setCourseFilter('all', true);
+        }
         switchView(target, true);
       }
     });
@@ -379,22 +529,46 @@ document.addEventListener('DOMContentLoaded', () => {
   // 초기 로드 시 라우팅 실행
   handleHashRouting();
 
-  // 2. 블랙 / 화이트 테마 전환 시스템 (기본: 화이트, 토글 시 배경 #121212 & 화이트 텍스트)
-  const themeToggleBtn = document.getElementById('btn-toggle-theme');
-  const themeToggleLabel = document.getElementById('theme-toggle-label');
+  // 2. 에디토리얼 블랙 / 화이트 테마 전환 시스템 (기본: 화이트)
+  const themeBtnBlack = document.getElementById('theme-btn-black');
+  const themeBtnWhite = document.getElementById('theme-btn-white');
   const SAVED_THEME_KEY = 'ic_selected_theme';
+  let themeSwitchTimer = null;
 
-  function applyTheme(themeName) {
+  function applyTheme(themeName, isInitial = false) {
     const isDark = themeName === 'dark';
+    const currentIsDark = document.body.classList.contains('theme-dark');
+
+    // 이미 동일한 테마가 적용되어 있는 경우 재실행 방지 (초기화 제외)
+    if (!isInitial && currentIsDark === isDark) {
+      return;
+    }
+
+    // 클릭 시 배경과 모든 요소(글자, 버튼, 보더, 필터 등)의 전환 속도를 100% 동일하게 동기화
+    if (!isInitial) {
+      document.documentElement.classList.add('is-theme-switching');
+      document.body.classList.add('is-theme-switching');
+
+      if (themeSwitchTimer) {
+        clearTimeout(themeSwitchTimer);
+      }
+      themeSwitchTimer = setTimeout(() => {
+        document.documentElement.classList.remove('is-theme-switching');
+        document.body.classList.remove('is-theme-switching');
+      }, 430);
+    }
+
     document.body.classList.toggle('theme-dark', isDark);
     document.documentElement.classList.toggle('theme-dark', isDark);
 
-    if (themeToggleBtn) {
-      themeToggleBtn.setAttribute('aria-checked', isDark ? 'true' : 'false');
+    if (themeBtnBlack && themeBtnWhite) {
+      themeBtnBlack.classList.toggle('active', isDark);
+      themeBtnBlack.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+
+      themeBtnWhite.classList.toggle('active', !isDark);
+      themeBtnWhite.setAttribute('aria-pressed', !isDark ? 'true' : 'false');
     }
-    if (themeToggleLabel) {
-      themeToggleLabel.textContent = isDark ? 'BLACK' : 'WHITE';
-    }
+
     try {
       localStorage.setItem(SAVED_THEME_KEY, isDark ? 'dark' : 'white');
     } catch (e) {
@@ -409,12 +583,25 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (e) {
     initialTheme = 'white';
   }
-  applyTheme(initialTheme);
 
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-      const isCurrentlyDark = document.body.classList.contains('theme-dark');
-      applyTheme(isCurrentlyDark ? 'white' : 'dark');
+  // 초기 렌더링 깜빡임 방지: 로드 시 트랜지션을 잠시 끄고 테마 적용
+  document.body.classList.add('theme-no-transition');
+  applyTheme(initialTheme, true);
+  // 다음 프레임에서 트랜지션 복원하여 클릭 시 부드러운 테마 전환 활성화
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      document.body.classList.remove('theme-no-transition');
+    }, 60);
+  });
+
+  if (themeBtnBlack) {
+    themeBtnBlack.addEventListener('click', () => {
+      applyTheme('dark');
+    });
+  }
+  if (themeBtnWhite) {
+    themeBtnWhite.addEventListener('click', () => {
+      applyTheme('white');
     });
   }
 
@@ -607,4 +794,126 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 50);
     }, { passive: true });
   }
+
+  // ==========================================================================
+  // 랜딩페이지 16개 디자이너 실제 붉은 벡터 패스 인터랙션 시스템
+  // ==========================================================================
+  function initLandingHeroSpots() {
+    const spotsOverlay = document.getElementById('hero-spots-overlay');
+    const tooltip = document.getElementById('hero-designer-tooltip');
+    const tooltipNameKo = document.getElementById('tooltip-name-ko');
+    const tooltipNameEn = document.getElementById('tooltip-name-en');
+
+    if (!spotsOverlay || typeof HERO_SPOTS_DATA === 'undefined') return;
+
+    spotsOverlay.innerHTML = '';
+    const svgNS = 'http://www.w3.org/2000/svg';
+
+    // 원본 SVG의 좌표계(Y축 반전)와 100% 동일하게 일치시키는 루트 그룹
+    const rootTransformG = document.createElementNS(svgNS, 'g');
+    rootTransformG.setAttribute('transform', 'matrix(1 0 0 -1 0 2363.110352)');
+
+    HERO_SPOTS_DATA.forEach((spot) => {
+      const groupEl = document.createElementNS(svgNS, 'g');
+      groupEl.setAttribute('class', 'hero-designer-spot');
+      groupEl.setAttribute('data-designer-id', spot.designerId);
+      groupEl.setAttribute('data-name-ko', spot.nameKo);
+      groupEl.setAttribute('data-name-en', spot.nameEn);
+      groupEl.setAttribute('tabindex', '0');
+      groupEl.setAttribute('role', 'button');
+      groupEl.setAttribute('aria-label', `디자이너 ${spot.nameKo} (${spot.nameEn}) 프로필 보기`);
+      groupEl.style.transformOrigin = `${spot.localX}px ${spot.localY}px`;
+
+      // 1. 주변까지 넓게 인식되도록 투명 히트 영역 (반경 65px)
+      const hitCircle = document.createElementNS(svgNS, 'circle');
+      hitCircle.setAttribute('cx', spot.localX);
+      hitCircle.setAttribute('cy', spot.localY);
+      hitCircle.setAttribute('r', '65');
+      hitCircle.setAttribute('class', 'spot-hit-area');
+      hitCircle.setAttribute('fill', 'transparent');
+      groupEl.appendChild(hitCircle);
+
+      // 2. 벡터 파일의 정확한 빨간색 패스 자체 주입
+      const pathsWrap = document.createElementNS(svgNS, 'g');
+      pathsWrap.setAttribute('class', 'spot-paths-wrap');
+      pathsWrap.innerHTML = spot.paths.join('');
+      groupEl.appendChild(pathsWrap);
+
+      // 마우스 호버 이벤트: 배경/번호 없이 커서 옆에 디자이너 이름만 노출
+      groupEl.addEventListener('mouseenter', (e) => {
+        if (tooltip && tooltipNameKo) {
+          tooltipNameKo.textContent = spot.nameKo;
+          if (tooltipNameEn) tooltipNameEn.textContent = spot.nameEn;
+          tooltip.classList.add('is-active');
+          updateHoverPosition(e.clientX, e.clientY);
+        }
+      });
+
+      groupEl.addEventListener('mousemove', (e) => {
+        updateHoverPosition(e.clientX, e.clientY);
+      });
+
+      groupEl.addEventListener('mouseleave', () => {
+        if (tooltip) {
+          tooltip.classList.remove('is-active');
+        }
+      });
+
+      // 키보드 탭 포커스 접근성 지원
+      groupEl.addEventListener('focus', () => {
+        if (tooltip && tooltipNameKo) {
+          tooltipNameKo.textContent = spot.nameKo;
+          if (tooltipNameEn) tooltipNameEn.textContent = spot.nameEn;
+          const rect = groupEl.getBoundingClientRect();
+          updateHoverPosition(rect.left + rect.width / 2, rect.top + rect.height / 2);
+          tooltip.classList.add('is-active');
+        }
+      });
+
+      groupEl.addEventListener('blur', () => {
+        if (tooltip) {
+          tooltip.classList.remove('is-active');
+        }
+      });
+
+      // 클릭 시 해당 디자이너 상세페이지로 즉각 연결
+      const navigateToDesigner = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (tooltip) tooltip.classList.remove('is-active');
+        openDesignerDetail(spot.designerId, true);
+      };
+
+      groupEl.addEventListener('click', navigateToDesigner);
+      groupEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          navigateToDesigner(e);
+        }
+      });
+
+      rootTransformG.appendChild(groupEl);
+    });
+
+    spotsOverlay.appendChild(rootTransformG);
+
+    // 마우스 커서 옆 디자이너 이름 위치 추종
+    function updateHoverPosition(clientX, clientY) {
+      if (!tooltip) return;
+      // 화면 우측 경계에 인접할 경우 왼쪽으로 표시
+      const screenWidth = window.innerWidth;
+      const isNearRight = clientX > screenWidth - 180;
+
+      if (isNearRight) {
+        tooltip.style.left = `${clientX - 16}px`;
+        tooltip.style.transform = 'translate(-100%, 14px)';
+      } else {
+        tooltip.style.left = `${clientX}px`;
+        tooltip.style.transform = 'translate(18px, 14px)';
+      }
+      tooltip.style.top = `${clientY}px`;
+    }
+  }
+
+  // 16개 디자이너 불씨 핫스팟 초기화 실행
+  initLandingHeroSpots();
 });

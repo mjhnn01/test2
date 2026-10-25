@@ -10,7 +10,7 @@
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
   
   <!-- Main CSS (캐시 방지 버전 파라미터 적용) -->
-  <link rel="stylesheet" href="css/style.css?v=20261018_17">
+  <link rel="stylesheet" href="css/style.css?v=20261025_20">
 </head>
 <body>
   <div class="site-wrapper">
@@ -37,14 +37,15 @@
         </button>
       </nav>
 
-      <!-- 부가 컨트롤: 블랙 / 화이트 테마 전환 토글 스위치 -->
+      <!-- 부가 컨트롤: 에디토리얼 텍스트 테마 토글 (BLACK / WHITE) -->
       <div class="nav-extra-actions">
-        <div class="theme-toggle-wrapper">
-          <button type="button" class="theme-toggle-switch" id="btn-toggle-theme" role="switch" aria-checked="false" aria-label="블랙 및 화이트 테마 전환" title="블랙/화이트 테마 전환">
-            <span class="theme-toggle-track">
-              <span class="theme-toggle-thumb"></span>
-            </span>
-            <span class="theme-toggle-label" id="theme-toggle-label">WHITE</span>
+        <div class="theme-editorial-toggle" id="theme-editorial-toggle" role="group" aria-label="블랙 및 화이트 테마 전환">
+          <button type="button" class="theme-text-btn" id="theme-btn-black" aria-pressed="false" aria-label="블랙 테마로 전환">
+            BLACK
+          </button>
+          <span class="theme-text-divider" aria-hidden="true">/</span>
+          <button type="button" class="theme-text-btn active" id="theme-btn-white" aria-pressed="true" aria-label="화이트 테마로 전환">
+            WHITE
           </button>
         </div>
       </div>
@@ -64,15 +65,23 @@
         <div class="landing-hero-fullscreen" id="landing-hero-fullscreen">
           
           <div class="hero-graphic-wrap">
-            <!-- 배경 원본 그래픽 (새로 첨부된 고해상도 벡터 그래픽) -->
-            <img src="assets/combustion-graphic.svg" alt="불완전연소 메인 키비주얼 그래픽" class="hero-graphic-img" id="hero-graphic-img">
+            <!-- 배경 그래픽 & 인터랙티브 오버레이 스테이지 -->
+            <div class="hero-graphic-stage" id="hero-graphic-stage">
+              <!-- 배경 원본 그래픽 (고해상도 벡터 그래픽) -->
+              <img src="assets/combustion-graphic.svg" alt="불완전연소 메인 키비주얼 그래픽" class="hero-graphic-img" id="hero-graphic-img">
 
-            <!-- 우측 3시~4시 방향: 토글 스위치 (1번 이미지 사양) -->
-            <div class="hero-bottom-control-block">
-              <div class="hero-custom-switch on" id="hero-custom-switch" role="switch" aria-checked="true" tabindex="0" title="EMBER MODE SWITCH">
-                <div class="switch-knob"></div>
-              </div>
+              <!-- 16개 디자이너 붉은 불씨 인터랙티브 SVG 오버레이 -->
+              <svg class="hero-spots-overlay" id="hero-spots-overlay" viewBox="0 0 2398.5 2363.110352" preserveAspectRatio="xMidYMid meet" aria-label="디자이너 붉은 불씨 인터랙션 맵">
+                <!-- JS를 통해 16개 핫스팟 동적 주입 -->
+              </svg>
             </div>
+
+            <!-- 디자이너 이름 플로팅 호버 텍스트 (번호, 배경 없이 순수 이름만 노출) -->
+            <div class="hero-designer-hover-name" id="hero-designer-tooltip" aria-hidden="true">
+              <span class="hover-name-ko font-brand-highlight" id="tooltip-name-ko">강석준</span>
+              <span class="hover-name-en" id="tooltip-name-en">Kang Seokjun</span>
+            </div>
+
           </div>
 
         </div>
@@ -447,6 +456,19 @@
       <section class="page-view" id="view-project" aria-label="프로젝트 페이지">
         <div class="project-view-container">
           
+          <!-- 우측 여백 중앙: 프로젝트 수업별 분류 필터 (프로젝트 페이지 진입 시에만 노출) -->
+          <nav class="project-side-filter" id="project-side-filter" aria-label="프로젝트 수업 분류 필터">
+            <button type="button" class="side-filter-btn active" data-filter="all" id="btn-filter-all" aria-pressed="true" title="모든 프로젝트 보기 (29개)">
+              ALL
+            </button>
+            <button type="button" class="side-filter-btn" data-filter="convergence" id="btn-filter-convergence" aria-pressed="false" title="컨버전스 디자인 (15개 작품)">
+              컨버전스 디자인
+            </button>
+            <button type="button" class="side-filter-btn" data-filter="advanced" id="btn-filter-advanced" aria-pressed="false" title="어드밴스드 디자인 (14개 작품)">
+              어드밴스드 디자인
+            </button>
+          </nav>
+
           <!-- 화면 중앙 고정 프로젝트 정보 디스플레이 (마우스 호버 시 노출) -->
           <div class="project-central-display" id="project-central-display" aria-live="polite">
             <span class="central-project-title font-brand-highlight" id="central-project-title"></span><span class="central-project-comma">,</span>
@@ -456,7 +478,7 @@
           <!-- 타이포 없이 3:4 이미지가 여백 없이 꽉 찬 3열 풀와이드 그리드 -->
           <div class="project-card-grid" id="project-card-grid">
             <!-- 프로젝트 01 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="mobility" data-project-id="01" tabindex="0" role="button" aria-label="AURA - 김민우, 이수진" data-title="AURA" data-designer-en="KIM MINWOO, LEE SOOJIN">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="01" data-category="mobility"  tabindex="0" role="button" aria-label="AURA - 강석준" data-title="AURA" data-designer-en="KANG SEOKJUN">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -469,14 +491,14 @@
                     <h3 class="overlay-title font-brand-highlight">AURA</h3>
                     <p class="overlay-desc">도심형 자율주행 모빌리티</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">김민우, 이수진</p>
+                    <p class="overlay-designer">강석준</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 02 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="living" data-project-id="02" tabindex="0" role="button" aria-label="TRACE - 박지원" data-title="TRACE" data-designer-en="PARK JIWON">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="02" data-category="living"  tabindex="0" role="button" aria-label="TRACE - 강제헌" data-title="TRACE" data-designer-en="KANG JEHEON">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -489,14 +511,14 @@
                     <h3 class="overlay-title font-brand-highlight">TRACE</h3>
                     <p class="overlay-desc">열기와 흔적의 모듈형 수납 시스템</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">박지원</p>
+                    <p class="overlay-designer">강제헌</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 03 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="tech" data-project-id="03" tabindex="0" role="button" aria-label="IGNIS - 정서연, 한도윤" data-title="IGNIS" data-designer-en="JUNG SEOYEON, HAN DOYOUN">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="03" data-category="tech"  tabindex="0" role="button" aria-label="IGNIS - 김나연" data-title="IGNIS" data-designer-en="KIM NAYEON">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -509,14 +531,14 @@
                     <h3 class="overlay-title font-brand-highlight">IGNIS</h3>
                     <p class="overlay-desc">차세대 감성 스마트 공기정화 솔루션</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">정서연, 한도윤</p>
+                    <p class="overlay-designer">김나연</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 04 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="healthcare" data-project-id="04" tabindex="0" role="button" aria-label="RELIEF - 최예진" data-title="RELIEF" data-designer-en="CHOI YEJIN">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="04" data-category="healthcare"  tabindex="0" role="button" aria-label="RELIEF - 김하영" data-title="RELIEF" data-designer-en="KIM HAYOUNG">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -529,14 +551,14 @@
                     <h3 class="overlay-title font-brand-highlight">RELIEF</h3>
                     <p class="overlay-desc">만성 통증 케어를 위한 웨어러블 디바이스</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">최예진</p>
+                    <p class="overlay-designer">김하영</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 05 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="mobility" data-project-id="05" tabindex="0" role="button" aria-label="KINETIC - 강현우" data-title="KINETIC" data-designer-en="KANG HYUNWOO">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="05" data-category="mobility"  tabindex="0" role="button" aria-label="KINETIC - 노유정" data-title="KINETIC" data-designer-en="ROH YUJEONG">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -549,14 +571,14 @@
                     <h3 class="overlay-title font-brand-highlight">KINETIC</h3>
                     <p class="overlay-desc">물류 허브용 라스트마일 이송 디바이스</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">강현우</p>
+                    <p class="overlay-designer">노유정</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 06 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="living" data-project-id="06" tabindex="0" role="button" aria-label="EMBER LIGHT - 윤다은, 송민호" data-title="EMBER LIGHT" data-designer-en="YOON DAEUN, SONG MINHO">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="06" data-category="living"  tabindex="0" role="button" aria-label="EMBER LIGHT - 문관우" data-title="EMBER LIGHT" data-designer-en="MOON GWANWOO">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -569,14 +591,14 @@
                     <h3 class="overlay-title font-brand-highlight">EMBER LIGHT</h3>
                     <p class="overlay-desc">연소 잔여물을 모티프로 한 조명</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">윤다은, 송민호</p>
+                    <p class="overlay-designer">문관우</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 07 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="service" data-project-id="07" tabindex="0" role="button" aria-label="SPARK - 임채원" data-title="SPARK" data-designer-en="LIM CHAEWON">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="07" data-category="service"  tabindex="0" role="button" aria-label="SPARK - 문주환" data-title="SPARK" data-designer-en="MOON JUHWAN">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -589,14 +611,14 @@
                     <h3 class="overlay-title font-brand-highlight">SPARK</h3>
                     <p class="overlay-desc">디자이너 협업 및 메이커스 아카이빙 플랫폼</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">임채원</p>
+                    <p class="overlay-designer">문주환</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 08 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="tech" data-project-id="08" tabindex="0" role="button" aria-label="CORE - 백승호" data-title="CORE" data-designer-en="BAEK SEUNGHO">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="08" data-category="tech"  tabindex="0" role="button" aria-label="CORE - 박진호" data-title="CORE" data-designer-en="PARK JINHO">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -609,14 +631,14 @@
                     <h3 class="overlay-title font-brand-highlight">CORE</h3>
                     <p class="overlay-desc">지속가능한 배터리 교환형 홈 어플라이언스</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">백승호</p>
+                    <p class="overlay-designer">박진호</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 09 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="healthcare" data-project-id="09" tabindex="0" role="button" aria-label="OASIS - 노유진, 홍태경" data-title="OASIS" data-designer-en="ROH YUJIN, HONG TAEKYUNG">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="09" data-category="healthcare"  tabindex="0" role="button" aria-label="OASIS - 유서연" data-title="OASIS" data-designer-en="YOO SEOYEON">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -629,14 +651,14 @@
                     <h3 class="overlay-title font-brand-highlight">OASIS</h3>
                     <p class="overlay-desc">소방구조대원을 위한 열기 냉각 현장 지원 기구</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">노유진, 홍태경</p>
+                    <p class="overlay-designer">유서연</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 10 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="mobility" data-project-id="10" tabindex="0" role="button" aria-label="TERRA-ROVER - 장우석" data-title="TERRA-ROVER" data-designer-en="JANG WOOSEOK">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="10" data-category="mobility"  tabindex="0" role="button" aria-label="TERRA-ROVER - 윤영서" data-title="TERRA-ROVER" data-designer-en="YOON YOUNGSEO">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -649,14 +671,14 @@
                     <h3 class="overlay-title font-brand-highlight">TERRA-ROVER</h3>
                     <p class="overlay-desc">극한 환경 탐사용 모듈러 모빌리티</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">장우석</p>
+                    <p class="overlay-designer">윤영서</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 11 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="living" data-project-id="11" tabindex="0" role="button" aria-label="ASH & FORM - 이채연" data-title="ASH & FORM" data-designer-en="LEE CHAEYEON">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="11" data-category="living"  tabindex="0" role="button" aria-label="ASH & FORM - 이승민" data-title="ASH & FORM" data-designer-en="LEE SEUNGMIN">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -669,14 +691,14 @@
                     <h3 class="overlay-title font-brand-highlight">ASH & FORM</h3>
                     <p class="overlay-desc">탄화 목재와 메탈 접합 가구 시리즈</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">이채연</p>
+                    <p class="overlay-designer">이승민</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 12 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="tech" data-project-id="12" tabindex="0" role="button" aria-label="NEBULA - 한지민" data-title="NEBULA" data-designer-en="HAN JIMIN">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="12" data-category="tech"  tabindex="0" role="button" aria-label="NEBULA - 이종훈" data-title="NEBULA" data-designer-en="LEE JONGHOON">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -689,14 +711,14 @@
                     <h3 class="overlay-title font-brand-highlight">NEBULA</h3>
                     <p class="overlay-desc">차세대 제스처 인터랙션 스마트 허브</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">한지민</p>
+                    <p class="overlay-designer">이종훈</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 13 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="healthcare" data-project-id="13" tabindex="0" role="button" aria-label="VITAL-BAND - 오승택" data-title="VITAL-BAND" data-designer-en="OH SEUNGTAEK">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="13" data-category="healthcare"  tabindex="0" role="button" aria-label="VITAL-BAND - 임서영" data-title="VITAL-BAND" data-designer-en="LIM SEOYOUNG">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -709,14 +731,14 @@
                     <h3 class="overlay-title font-brand-highlight">VITAL-BAND</h3>
                     <p class="overlay-desc">시니어 응급 알림 및 보행 보조 시스템</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">오승택</p>
+                    <p class="overlay-designer">임서영</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 14 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="service" data-project-id="14" tabindex="0" role="button" aria-label="CIRCULO - 양서윤" data-title="CIRCULO" data-designer-en="YANG SEOYOON">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="14" data-category="service"  tabindex="0" role="button" aria-label="CIRCULO - 임창현" data-title="CIRCULO" data-designer-en="LIM CHANGHYUN">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -729,14 +751,14 @@
                     <h3 class="overlay-title font-brand-highlight">CIRCULO</h3>
                     <p class="overlay-desc">업사이클링 소재 순환 렌탈 서비스 디자인</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">양서윤</p>
+                    <p class="overlay-designer">임창현</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 15 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="mobility" data-project-id="15" tabindex="0" role="button" aria-label="PULSE - 조민기, 송하은" data-title="PULSE" data-designer-en="CHO MINGI, SONG HAEUN">
+            <article class="project-wireframe-card" data-course="convergence" data-project-id="15" data-category="mobility"  tabindex="0" role="button" aria-label="PULSE - 하세영, 최산" data-title="PULSE" data-designer-en="HA SEYOUNG, CHOI SAN">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -749,14 +771,14 @@
                     <h3 class="overlay-title font-brand-highlight">PULSE</h3>
                     <p class="overlay-desc">자율주행 퍼스널 커뮤터 콕핏 디자인</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">조민기, 송하은</p>
+                    <p class="overlay-designer">하세영, 최산</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 16 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="living" data-project-id="16" tabindex="0" role="button" aria-label="CINDER - 곽지민" data-title="CINDER" data-designer-en="KWAK JIMIN">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="16" data-category="living"  tabindex="0" role="button" aria-label="CINDER - 강석준" data-title="CINDER" data-designer-en="KANG SEOKJUN">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -769,14 +791,14 @@
                     <h3 class="overlay-title font-brand-highlight">CINDER</h3>
                     <p class="overlay-desc">불씨의 잔열을 품은 아로마 디퓨저 오브제</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">곽지민</p>
+                    <p class="overlay-designer">강석준</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 17 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="tech" data-project-id="17" tabindex="0" role="button" aria-label="THERMO-SYNC - 안도현" data-title="THERMO-SYNC" data-designer-en="AHN DOHYUN">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="17" data-category="tech"  tabindex="0" role="button" aria-label="THERMO-SYNC - 강제헌" data-title="THERMO-SYNC" data-designer-en="KANG JEHEON">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -789,14 +811,14 @@
                     <h3 class="overlay-title font-brand-highlight">THERMO-SYNC</h3>
                     <p class="overlay-desc">개인 맞춤형 체온 감응 웨어러블 디바이스</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">안도현</p>
+                    <p class="overlay-designer">강제헌</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 18 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="healthcare" data-project-id="18" tabindex="0" role="button" aria-label="BREATHE - 임수빈" data-title="BREATHE" data-designer-en="LIM SUBIN">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="18" data-category="healthcare"  tabindex="0" role="button" aria-label="BREATHE - 김하영" data-title="BREATHE" data-designer-en="KIM HAYOUNG">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -809,14 +831,14 @@
                     <h3 class="overlay-title font-brand-highlight">BREATHE</h3>
                     <p class="overlay-desc">호흡기 재활 환자를 위한 스마트 흡입 보조기</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">임수빈</p>
+                    <p class="overlay-designer">김하영</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 19 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="service" data-project-id="19" tabindex="0" role="button" aria-label="CONNECT-ID - 남기웅" data-title="CONNECT-ID" data-designer-en="NAM KIWOONG">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="19" data-category="service"  tabindex="0" role="button" aria-label="CONNECT-ID - 노유정" data-title="CONNECT-ID" data-designer-en="ROH YUJEONG">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -829,14 +851,14 @@
                     <h3 class="overlay-title font-brand-highlight">CONNECT-ID</h3>
                     <p class="overlay-desc">인터랙티브 전시 감상 및 데이터 큐레이션 기구</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">남기웅</p>
+                    <p class="overlay-designer">노유정</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 20 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="mobility" data-project-id="20" tabindex="0" role="button" aria-label="VOLT-CARGO - 정유진" data-title="VOLT-CARGO" data-designer-en="JUNG YUJIN">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="20" data-category="mobility"  tabindex="0" role="button" aria-label="VOLT-CARGO - 문관우" data-title="VOLT-CARGO" data-designer-en="MOON GWANWOO">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -849,14 +871,14 @@
                     <h3 class="overlay-title font-brand-highlight">VOLT-CARGO</h3>
                     <p class="overlay-desc">도심 친환경 콜드체인 배송 모빌리티</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">정유진</p>
+                    <p class="overlay-designer">문관우</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 21 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="living" data-project-id="21" tabindex="0" role="button" aria-label="HABITAT - 배준혁" data-title="HABITAT" data-designer-en="BAE JUNHYUK">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="21" data-category="living"  tabindex="0" role="button" aria-label="HABITAT - 문주환" data-title="HABITAT" data-designer-en="MOON JUHWAN">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -869,14 +891,14 @@
                     <h3 class="overlay-title font-brand-highlight">HABITAT</h3>
                     <p class="overlay-desc">1인 가구를 위한 모듈러 수납 시스템</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">배준혁</p>
+                    <p class="overlay-designer">문주환</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 22 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="tech" data-project-id="22" tabindex="0" role="button" aria-label="ORBIT - 황세연" data-title="ORBIT" data-designer-en="HWANG SEYEON">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="22" data-category="tech"  tabindex="0" role="button" aria-label="ORBIT - 김나연, 임창현" data-title="ORBIT" data-designer-en="KIM NAYEON, LIM CHANGHYUN">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -889,14 +911,14 @@
                     <h3 class="overlay-title font-brand-highlight">ORBIT</h3>
                     <p class="overlay-desc">무선 전력 전송 기반의 데스크 모듈 시스템</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">황세연</p>
+                    <p class="overlay-designer">김나연, 임창현</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 23 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="healthcare" data-project-id="23" tabindex="0" role="button" aria-label="AURA MENTAL - 권나영, 서지훈" data-title="AURA MENTAL" data-designer-en="KWON NAYOUNG, SEO JIHOON">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="23" data-category="healthcare"  tabindex="0" role="button" aria-label="AURA MENTAL - 박진호" data-title="AURA MENTAL" data-designer-en="PARK JINHO">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -909,14 +931,14 @@
                     <h3 class="overlay-title font-brand-highlight">AURA MENTAL</h3>
                     <p class="overlay-desc">감각 피로 완화를 위한 멘탈케어 테라피 디바이스</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">권나영, 서지훈</p>
+                    <p class="overlay-designer">박진호</p>
                   </div>
                 </div>
               </div>
             </article>
 
                         <!-- 프로젝트 24 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="service" data-project-id="24" tabindex="0" role="button" aria-label="RE-SOIL - 표진아" data-title="RE-SOIL" data-designer-en="PYO JINA">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="24" data-category="service"  tabindex="0" role="button" aria-label="RE-SOIL - 유서연, 이승민" data-title="RE-SOIL" data-designer-en="YOO SEOYEON, LEE SEUNGMIN">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -929,14 +951,14 @@
                     <h3 class="overlay-title font-brand-highlight">RE-SOIL</h3>
                     <p class="overlay-desc">도심형 스마트 바이오 퇴비화 서비스 디바이스</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">표진아</p>
+                    <p class="overlay-designer">유서연, 이승민</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 25 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="living" data-project-id="25" tabindex="0" role="button" aria-label="GLOW - 신혜원" data-title="GLOW" data-designer-en="SHIN HYEWON">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="25" data-category="living"  tabindex="0" role="button" aria-label="GLOW - 윤영서" data-title="GLOW" data-designer-en="YOON YOUNGSEO">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -949,14 +971,14 @@
                     <h3 class="overlay-title font-brand-highlight">GLOW</h3>
                     <p class="overlay-desc">온도 반응형 생체리듬 홈 라이팅</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">신혜원</p>
+                    <p class="overlay-designer">윤영서</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 26 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="tech" data-project-id="26" tabindex="0" role="button" aria-label="FLOW - 문지원" data-title="FLOW" data-designer-en="MOON JIWON">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="26" data-category="tech"  tabindex="0" role="button" aria-label="FLOW - 이종훈" data-title="FLOW" data-designer-en="LEE JONGHOON">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -969,14 +991,14 @@
                     <h3 class="overlay-title font-brand-highlight">FLOW</h3>
                     <p class="overlay-desc">공간 적응형 사운드 프로젝터 디바이스</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">문지원</p>
+                    <p class="overlay-designer">이종훈</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 27 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="healthcare" data-project-id="27" tabindex="0" role="button" aria-label="RE-MOVE - 하준서" data-title="RE-MOVE" data-designer-en="HA JUNSEO">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="27" data-category="healthcare"  tabindex="0" role="button" aria-label="RE-MOVE - 임서영" data-title="RE-MOVE" data-designer-en="LIM SEOYOUNG">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -989,14 +1011,14 @@
                     <h3 class="overlay-title font-brand-highlight">RE-MOVE</h3>
                     <p class="overlay-desc">뇌졸중 환자의 일상 복귀를 위한 손 재활 글러브</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">하준서</p>
+                    <p class="overlay-designer">임서영</p>
                   </div>
                 </div>
               </div>
             </article>
 
 <!-- 프로젝트 28 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="living" data-project-id="28" tabindex="0" role="button" aria-label="KNOT - 유승민, 고은별" data-title="KNOT" data-designer-en="YOO SEUNGMIN, KO EUNBYUL">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="28" data-category="living"  tabindex="0" role="button" aria-label="KNOT - 최산" data-title="KNOT" data-designer-en="CHOI SAN">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -1009,14 +1031,14 @@
                     <h3 class="overlay-title font-brand-highlight">KNOT</h3>
                     <p class="overlay-desc">재생 알루미늄 조립식 라운지 체어</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">유승민, 고은별</p>
+                    <p class="overlay-designer">최산</p>
                   </div>
                 </div>
               </div>
             </article>
 
             <!-- 프로젝트 29 (3:4 무타이포 갤러리 카드 - 클릭 시 어두워지며 정보 노출) -->
-            <article class="project-wireframe-card" data-category="service" data-project-id="29" tabindex="0" role="button" aria-label="EMBER ARCHIVE - 34회 졸업준비위원회" data-title="EMBER ARCHIVE" data-designer-en="34TH GRADUATION COMMITTEE">
+            <article class="project-wireframe-card" data-course="advanced" data-project-id="29" data-category="service"  tabindex="0" role="button" aria-label="EMBER ARCHIVE - 하세영" data-title="EMBER ARCHIVE" data-designer-en="HA SEYOUNG">
               <div class="project-media-wrapper">
                 <!-- 3:4 순수 회색 박스 -->
                 <div class="project-gray-box"></div>
@@ -1029,7 +1051,7 @@
                     <h3 class="overlay-title font-brand-highlight">EMBER ARCHIVE</h3>
                     <p class="overlay-desc">불완전연소 34회 졸업전시 디지털 아카이브</p>
                     <div class="overlay-divider"></div>
-                    <p class="overlay-designer">34회 졸업준비위원회</p>
+                    <p class="overlay-designer">하세영</p>
                   </div>
                 </div>
               </div>
@@ -1066,10 +1088,10 @@
           <!-- [2] 하단: 작품 명 + 디자이너 명 + 작품에 대한 간단한 설명 (첫 화면 한눈에 들어오는 레이아웃) -->
           <div class="project-detail-content-area">
             
-            <!-- 작품 명 & 디자이너 명 인라인 한 줄 배치 (예: GWANJANG Moon Juhwan) -->
+            <!-- 작품 명 & 디자이너 명 인라인 한 줄 배치 (예: AURA KANG SEOKJUN) -->
             <div class="project-detail-header-row">
-              <h1 class="project-detail-title" id="project-detail-title">GWANJANG</h1>
-              <span class="project-detail-designer" id="project-detail-designer">Moon Juhwan</span>
+              <h1 class="project-detail-title" id="project-detail-title">AURA</h1>
+              <span class="project-detail-designer" id="project-detail-designer">KANG SEOKJUN</span>
             </div>
 
             <!-- 작품 설명 문단 (리드 문단 + 보조 설명 문단) -->
@@ -1495,8 +1517,9 @@
   </div>
 
   <!-- Databases & Main JavaScript -->
-  <script src="js/project-data.js"></script>
-  <script src="js/designer-data.js"></script>
-  <script src="js/main.js?v=20261018_17"></script>
+  <script src="js/project-data.js?v=20261025_17"></script>
+  <script src="js/designer-data.js?v=20261025_17"></script>
+  <script src="js/spots-data.js?v=20261025_17"></script>
+  <script src="js/main.js?v=20261025_20"></script>
 </body>
 </html>
